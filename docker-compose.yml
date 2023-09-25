@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=src
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Qwe!1234
+    networks:
+      my_network:
+        ipv4_address: 172.128.50.6
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    # command: ["./start.sh"]
+    # command: ["tail", "-f", "/dev/null"]
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_APP=app.py:APP
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=src
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Qwe!1234
+    networks:
+      - my_network
+    volumes:
+      - ./logs:/home/logs
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.128.50.0/24
+
+volumes:
+  postgres_data:
